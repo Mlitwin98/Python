@@ -127,5 +127,3 @@ while running:
     draw_all_shapes()
     time.sleep(0.2)
     pygame.display.update()
-
-print("halo")
