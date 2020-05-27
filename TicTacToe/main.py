@@ -1,9 +1,18 @@
 import pygame
 import random
 import time
+from tkinter import *
+from tkinter import messagebox
 
+Tk().wm_withdraw()
 seed = random.seed()
-turn = random.randint(0, 1)
+turn = 0
+
+# GLOBALS
+running = True
+flag = True
+possibleMoves = 9
+result = ''
 
 # COLORS
 white = (255, 255, 255)
@@ -14,9 +23,6 @@ order = []
 shapesPositions = []
 
 # BOARD
-possibleMoves = 9
-someoneWon = False
-
 boardPositions = [
     [(), (), (), ()],
     [(), (150, 150), (450, 150), (750, 150)],
@@ -41,7 +47,7 @@ def draw_board():
     pygame.draw.rect(screen, black, (0, 600, 900, 1))
 
 
-def draw_circle(position):
+def draw_o(position):
     pygame.draw.circle(screen, black, (position[0], position[1]), 140, 5)
 
 
@@ -55,20 +61,32 @@ def draw_all_shapes():
         if order[i] == 1:
             draw_x(shapesPositions[i])
         else:
-            draw_circle(shapesPositions[i])
+            draw_o(shapesPositions[i])
 
 
 def check_if_someone_won():
-    global someoneWon
     for i in range(1, 4):
         if boardCanPlace[i][1] == boardCanPlace[i][2] == boardCanPlace[i][3] != '':
-            someoneWon = True
+            if boardCanPlace[i][1] == 'x':
+                return 'X', 10, True
+            else:
+                return 'O', -10, True
         if boardCanPlace[1][i] == boardCanPlace[2][i] == boardCanPlace[3][i] != '':
-            someoneWon = True
+            if boardCanPlace[1][i] == 'x':
+                return 'X', 10, True
+            else:
+                return 'O', -10, True
     if boardCanPlace[1][1] == boardCanPlace[2][2] == boardCanPlace[3][3] != '':
-        someoneWon = True
+        if boardCanPlace[1][1] == 'x':
+            return 'X', 10, True
+        else:
+            return 'O', -10, True
     if boardCanPlace[3][1] == boardCanPlace[2][2] == boardCanPlace[1][3] != '':
-        someoneWon = True
+        if boardCanPlace[3][1] == 'x':
+            return 'X', 10, True
+        else:
+            return 'O', -10, True
+    return '', 0, False
 
 
 def generate_random_position():
@@ -103,6 +121,72 @@ def random_gameplay():
     handle_turn(x, y)
 
 
+def minimax_gameplay():
+    position = find_best_move(boardCanPlace)
+    x = position[0]
+    y = position[1]
+    handle_turn(x, y)
+
+
+def find_best_move(board):
+    best_val = -1000
+    best_move = (-1, -1)
+    for i in range(1, 4):
+        for j in range(1, 4):
+            if board[i][j] == '':
+                board[i][j] = 'x'
+                turn_f = 0
+                move_val = minimax(boardCanPlace, possibleMoves - 1, turn_f)
+                board[i][j] = ''
+                if move_val > best_val:
+                    best_move = (i, j)
+                    best_val = move_val
+    return best_move
+
+
+def minimax(board, possible_f, turn_f):
+    score = check_if_someone_won()[1]
+
+    if score == 10 or score == -10:
+        return score
+
+    if possible_f == 0:
+        return 0
+
+    if turn_f:
+        best = -10000
+        for i in range(1, 4):
+            for j in range(1, 4):
+                if board[i][j] == '':
+                    board[i][j] = 'x'
+                    possible_f -= 1
+                    turn_f = 0
+                    best = max(best, minimax(board, possible_f, turn_f))
+                    board[i][j] = ''
+        return best
+    else:
+        best = 10000
+        for i in range(1, 4):
+            for j in range(1, 4):
+                if board[i][j] == '':
+                    board[i][j] = 'o'
+                    possible_f -= 1
+                    turn_f = 1
+                    best = min(best, minimax(board, possible_f, turn_f))
+                    board[i][j] = ''
+        return best
+
+
+def display_winner():
+    global flag
+    if (possibleMoves == 0 or check_if_someone_won()[2]) and flag:
+        if result == '':
+            messagebox.showinfo('Game Over', 'TIE')
+        else:
+            messagebox.showinfo('Game Over', f'{result[0]} WON')
+        flag = False
+
+
 # Start Game
 pygame.init()
 
@@ -113,17 +197,21 @@ icon = pygame.image.load('icon.png')
 pygame.display.set_icon(icon)
 
 # Game Loop
-running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
     draw_board()
+    display_winner()
 
-    if possibleMoves > 0 and not someoneWon:
-        random_gameplay()
-        check_if_someone_won()
+    if possibleMoves > 0 and not check_if_someone_won()[2]:
+        if turn:
+            minimax_gameplay()
+        else:
+            random_gameplay()
+        result = check_if_someone_won()[0]
 
     draw_all_shapes()
-    time.sleep(0.2)
+    time.sleep(0.3)
+
     pygame.display.update()
