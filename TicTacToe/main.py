@@ -198,9 +198,7 @@ pygame.display.set_icon(icon)
 
 # Game Loop
 while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    pygame.display.update()
     draw_board()
     display_winner()
 
@@ -210,8 +208,10 @@ while running:
         else:
             random_gameplay()
         result = check_if_someone_won()[0]
-
+        
     draw_all_shapes()
     time.sleep(0.3)
 
-    pygame.display.update()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
