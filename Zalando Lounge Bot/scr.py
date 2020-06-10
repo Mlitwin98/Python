@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import *
 import time
+import fnmatch
 
 
 def bot(mail, password, campaign, category, brand, color, size):
@@ -50,7 +51,7 @@ def bot(mail, password, campaign, category, brand, color, size):
     try:
         filters_parent = driver.find_element_by_class_name('styles___categories-wrapper___3ZR1Q')
         for child in filters_parent.find_elements_by_xpath('./li'):
-            if child.find_element_by_xpath('./div/span').text.lower() == "mężczyźni" or child.find_element_by_xpath('./div/span').text.lower() == "mężczyźni i unisex":
+            if not fnmatch.fnmatch(child.find_element_by_xpath('./div/span').text.lower(), 'kobiet*'):
                 for innerChild in child.find_elements_by_xpath('./ul/li'):
                     child_s = innerChild.find_element_by_xpath('./div/span')
                     if child_s.text.lower() in category:
