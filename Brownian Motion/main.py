@@ -49,7 +49,7 @@ for i in range(N):
 	BrownianMove(i)
 
 plt.figure(figsize=(17, 9))
-plt.subplots_adjust(left=0.05, bottom=0.03, right=0.97, top=0.97, wspace=0.13, hspace=0.21)
+plt.subplots_adjust(left=0.05, bottom=0.03, right=0.97, top=0.93, wspace=0.13, hspace=0.21)
 
 # Skok jednostkowy plot
 plt.subplot(331)
@@ -65,7 +65,7 @@ plt.plot(yUnit.mean(0), 'g--', label='Średnia y')
 plt.legend()
 
 plt.subplot(333)
-plt.title('Odchylenie standardowe w czasie dla przyrostu jednostkowego')
+plt.title('Odchylenie standardowe odległości w czasie dla przyrostu jednostkowego')
 plt.plot(np.sqrt(xUnit.std(0)**2 + yUnit.std(0)**2), 'r-')
 # ------
 
@@ -83,7 +83,7 @@ plt.plot(yGauss.mean(0), 'g--', label='Średnia y')
 plt.legend()
 
 plt.subplot(336)
-plt.title('Odchylenie standardowe w czasie dla rozkładu Gaussa')
+plt.title('Odchylenie standardowe odległości w czasie dla rozkładu Gaussa')
 plt.plot(np.sqrt(xGauss.std(0)**2 + yGauss.std(0)**2), 'r-')
 # ------
 
@@ -101,8 +101,9 @@ plt.plot(yCauchy.mean(0), 'g--', label='Średnia y')
 plt.legend()
 
 plt.subplot(339)
-plt.title("Odchylenie standardowe w czasie dla rozkładu Cauchy'ego")
+plt.title("Odchylenie standardowe odległości w czasie dla rozkładu Cauchy'ego")
 plt.plot(np.sqrt(xCauchy.std(0)**2 + yCauchy.std(0)**2), 'r-')
 # ------
 
+plt.suptitle("Autor: Mateusz Litwin", fontsize=14)
 plt.show()

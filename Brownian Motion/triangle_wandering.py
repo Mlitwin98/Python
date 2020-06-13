@@ -11,9 +11,9 @@ def RandomPointInTriangle(pt1, pt2, pt3):
 
 # Trójkąt
 pts = np.array([[0, 0], [1, 0], [0.5, np.sqrt(0.75)]])
-triangle = plt.Polygon(pts, fill=False)
-ax = plt.gca()
-ax.add_patch(triangle)
+#triangle = plt.Polygon(pts, fill=False)
+#ax = plt.gca()
+#ax.add_patch(triangle)
 
 
 # Losowy punkt startowy w trójkącie
@@ -28,6 +28,7 @@ for i in range(1, 10001):
 	pointsX.append(newX)
 	pointsY.append(newY)
 
+plt.figure(figsize=(13, 9))
 plt.plot(pointsX, pointsY, 'ro')
 
 # PODPISY
