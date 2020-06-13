@@ -53,25 +53,25 @@ plt.subplots_adjust(left=0.05, bottom=0.03, right=0.97, top=0.93, wspace=0.13, h
 
 # Skok jednostkowy plot
 plt.subplot(331)
-plt.title('Przyrost jednostkowy')
+plt.title('Skok jednostkowy')
 plt.annotate('START', xy=(0, 0), xytext=(0, 1.3), arrowprops=dict(facecolor='green', shrink=0.05))
 plt.annotate('FINISH', xy=(xUnit[0][-1], yUnit[0][-1]), xytext=(xUnit[0][-1], yUnit[0][-1]+1.3), arrowprops=dict(facecolor='red', shrink=0.05))
 plt.plot(xUnit[0], yUnit[0])
 
 plt.subplot(332)
-plt.title('Średnie x i y w czasie dla przyrostu jednostkowego')
+plt.title('Średnie x i y w czasie dla skoku jednostkowego')
 plt.plot(xUnit.mean(0), 'r-', label='Średnia x')
 plt.plot(yUnit.mean(0), 'g--', label='Średnia y')
 plt.legend()
 
 plt.subplot(333)
-plt.title('Odchylenie standardowe odległości w czasie dla przyrostu jednostkowego')
+plt.title('Odchylenie standardowe odległości w czasie dla skoku jednostkowego')
 plt.plot(np.sqrt(xUnit.std(0)**2 + yUnit.std(0)**2), 'r-')
 # ------
 
 # Skok Gauss plot
 plt.subplot(334)
-plt.title('Przyrost z rozkładu Gaussa')
+plt.title('Skok z rozkładu Gaussa')
 plt.annotate('START', xy=(0, 0), xytext=(0, 1.3), arrowprops=dict(facecolor='green', shrink=0.05))
 plt.annotate('FINISH', xy=(xGauss[0][-1], yGauss[0][-1]), xytext=(xGauss[0][-1], yGauss[0][-1]+1.3), arrowprops=dict(facecolor='red', shrink=0.05))
 plt.plot(xGauss[0], yGauss[0])
@@ -89,7 +89,7 @@ plt.plot(np.sqrt(xGauss.std(0)**2 + yGauss.std(0)**2), 'r-')
 
 # Skok Cauchy plot
 plt.subplot(337)
-plt.title("Przyrost z rozkładu Cauch'ego")
+plt.title("Skok z rozkładu Cauch'ego")
 plt.annotate('START', xy=(0, 0), xytext=(0, 1.3), arrowprops=dict(facecolor='green', shrink=0.05))
 plt.annotate('FINISH', xy=(xCauchy[0][-1], yCauchy[0][-1]), xytext=(xCauchy[0][-1], yCauchy[0][-1]+1.3), arrowprops=dict(facecolor='red', shrink=0.05))
 plt.plot(xCauchy[0], yCauchy[0])
