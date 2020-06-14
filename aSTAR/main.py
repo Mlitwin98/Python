@@ -4,8 +4,8 @@ import tkinter as tk
 from tkinter import *
 
 start = (1, 1)
-goal = (38, 38)
-board = (40, 40)
+goal = (8, 8)
+board = (10, 10)
 
 root = tk.Tk()
 canvas = tk.Canvas(root, height=200, width=300)
@@ -21,10 +21,10 @@ x3Label = tk.Label(canvas, text='(width,height)')
 
 startXEntry = tk.Entry(canvas, textvariable=StringVar(root, '1'), bg='#D3D3D3')
 startYEntry = tk.Entry(canvas, textvariable=StringVar(root, '1'), bg='#D3D3D3')
-goalXEntry = tk.Entry(canvas, textvariable=StringVar(root, '38'), bg='#D3D3D3')
-goalYEntry = tk.Entry(canvas, textvariable=StringVar(root, '38'), bg='#D3D3D3')
-boardWidthEntry = tk.Entry(canvas, textvariable=StringVar(root, '40'), bg='#D3D3D3')
-boardHeightEntry = tk.Entry(canvas, textvariable=StringVar(root, '40'), bg='#D3D3D3')
+goalXEntry = tk.Entry(canvas, textvariable=StringVar(root, '8'), bg='#D3D3D3')
+goalYEntry = tk.Entry(canvas, textvariable=StringVar(root, '8'), bg='#D3D3D3')
+boardWidthEntry = tk.Entry(canvas, textvariable=StringVar(root, '10'), bg='#D3D3D3')
+boardHeightEntry = tk.Entry(canvas, textvariable=StringVar(root, '10'), bg='#D3D3D3')
 
 startLabel.place(relwidth=0.3, relheight=0.1, relx=0.1, rely=0.1)
 x1Label.place(relwidth=0.1, relheight=0.1, relx=0.2, rely=0.2)
@@ -116,23 +116,21 @@ class square:
 	def setParent(self, parent):
 		self.parent = parent
 
-	def getSelf(self):
-		return self
-
 
 running = True
 colorSquares = False
 
-squares = []
-for i in range(board[0] + 1):
-	for j in range(board[1] + 1):
+squares = [[square(red, 0, 0) for i in range(board[0])] for j in range(board[1])]
+
+for i in range(board[0]):
+	for j in range(board[1]):
 		if i == start[0] and j == start[1]:
-			squares.append(square(darkblue, i, j, True))
-			open_list.append(squares[len(squares) - 1])
+			squares[i][j] = square(darkblue, i, j, True)
+			open_list.append(squares[i][j])
 		elif i == goal[0] and j == goal[1]:
-			squares.append(square(darkblue, i, j, isEndPoint=True))
+			squares[i][j] = square(darkblue, i, j, isEndPoint=True)
 		else:
-			squares.append(square(white, i, j))
+			squares[i][j] = square(white, i, j)
 
 
 def startSearch():
@@ -146,62 +144,63 @@ def startSearch():
 
 		open_list.pop(currentIndex)
 		closed_list.append(currentSquare)
-		currentSquare.closeNode()
 
 		if currentSquare.isEndPoint:
-			path = []
 			current = currentSquare
-			while current is not None:
-				path.append(current.position)
+			while not current.isStartPoint:
+				print(current.position)
+				current.chooseNode()
 				current = current.parent
-			print(path[::-1])
-			return path[::-1]
+			return 0
+		#	path = []
+		#	current = currentSquare
+		#	while current is not None:
+		#		path.append(current.position)
+		#		current = current.parent
+		#	print(path[::-1])
+		#	return path[::-1]
 
 		children = []
 		for adjacent in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
-			childSquare = None
-			childPosition = (currentSquare.position[0] + adjacent[0], currentSquare.position[1] + adjacent[1])
 
-			if childPosition[0] < 0 or childPosition[0] > board[0] or childPosition[1] < 0 or childPosition[1] > board[1]:
+			if currentSquare.position[0] + adjacent[0] < 0 or currentSquare.position[0] + adjacent[0] == board[0] or currentSquare.position[1] + adjacent[1] < 0 or currentSquare.position[1] + adjacent[1] == board[1]:
 				continue
 
-			for s in squares:
-				if childPosition == s.position:
-					childSquare = s.getSelf()
+			childSquare = squares[currentSquare.position[0] + adjacent[0]][currentSquare.position[1] + adjacent[1]]
 
 			if childSquare.isBlocked:
 				continue
 
-			childSquare.parent = currentSquare
-			children.append(childSquare)
-
-		for child in children:
 			for closed in closed_list:
-				if child.position == closed.position:
+				if childSquare == closed:
 					continue
 
-			child.g = currentSquare.g + 10
-			child.h = child.calculateH()
-			child.f = child.g + child.h
+			potentialG = currentSquare.g + 10
 
 			for openS in open_list:
-				if child.position == openS.position and child.g > openS.g:
+				if childSquare.position == openS.position and potentialG > openS.g:
 					continue
 
-			open_list.append(child)
-			child.chooseNode()
+			childSquare.parent = currentSquare
+			childSquare.g = currentSquare.g + 10
+			childSquare.h = childSquare.calculateH()
+			childSquare.f = childSquare.g + childSquare.h
+
+			open_list.append(childSquare)
 
 
 while running:
 	pygame.display.update()
 	screen.fill(lightgray)
-	for i in range(len(squares)):
-		squares[i].draw()
+	for row in squares:
+		for square in row:
+			square.draw()
 
 	if colorSquares:
-		for i in range(len(squares)):
-			if squares[i].check():
-				squares[i].click()
+		for row in squares:
+			for square in row:
+				if square.check():
+					square.click()
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
