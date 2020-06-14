@@ -1,5 +1,7 @@
 import pygame
 import math
+from heapq import *
+import time as t
 import tkinter as tk
 from tkinter import *
 
@@ -62,13 +64,15 @@ blue = (173, 216, 230)
 darkblue = (0, 0, 139)
 red = (255, 0, 0)
 green = (0, 128, 0)
+pathColor = (24, 109, 245)
 
 open_list = []
+heapify(open_list)
 closed_list = []
 
 pygame.init()
-WIDTH = 800
-HEIGHT = 800
+WIDTH = 900
+HEIGHT = 900
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("A* PathFinding")
 
@@ -87,6 +91,9 @@ class square:
 		self.h = 0
 		self.isBlocked = False
 
+	def __lt__(self, other):
+		return self.f < other.f
+
 	def draw(self):
 		pygame.draw.rect(screen, self.color, self.rect, 0)
 		pygame.draw.rect(screen, black, self.rect, 1)
@@ -97,7 +104,7 @@ class square:
 
 	def click(self):
 		if not self.isStartPoint and not self.isEndPoint:
-			self.color = blue
+			self.color = black
 			self.isBlocked = True
 
 	def closeNode(self):
@@ -111,22 +118,23 @@ class square:
 	def calculateH(self):
 		a = goal[0] - self.position[0]
 		b = goal[1] - self.position[1]
-		return math.sqrt(a * a + b * b)
+		return math.sqrt(a**2 + b**2)
 
 	def setParent(self, parent):
 		self.parent = parent
 
+	def choosePath(self):
+		if not self.isStartPoint and not self.isEndPoint:
+			self.color = pathColor
 
-running = True
-colorSquares = False
 
+# Fill lists with squares
 squares = [[square(red, 0, 0) for i in range(board[0])] for j in range(board[1])]
-
 for i in range(board[0]):
 	for j in range(board[1]):
 		if i == start[0] and j == start[1]:
 			squares[i][j] = square(darkblue, i, j, True)
-			open_list.append(squares[i][j])
+			heappush(open_list, (0, squares[i][j]))
 		elif i == goal[0] and j == goal[1]:
 			squares[i][j] = square(darkblue, i, j, isEndPoint=True)
 		else:
@@ -134,60 +142,56 @@ for i in range(board[0]):
 
 
 def startSearch():
-	while len(open_list) > 0:
-		currentSquare = open_list[0]
-		currentIndex = 0
-		for index, openSquare in enumerate(open_list):
-			if openSquare.f < currentSquare.f:
-				currentSquare = openSquare
-				currentIndex = index
+	global search, displayPath
 
-		open_list.pop(currentIndex)
-		closed_list.append(currentSquare)
+	f, currentSquare = heappop(open_list)
+	closed_list.append(currentSquare)
+	currentSquare.chooseNode()
+	pygame.display.update()
 
-		if currentSquare.isEndPoint:
-			current = currentSquare
-			while not current.isStartPoint:
-				print(current.position)
-				current.chooseNode()
-				current = current.parent
-			return 0
-		#	path = []
-		#	current = currentSquare
-		#	while current is not None:
-		#		path.append(current.position)
-		#		current = current.parent
-		#	print(path[::-1])
-		#	return path[::-1]
+	if currentSquare.isEndPoint:
+		displayPath = True
+		search = False
+		return currentSquare
 
-		children = []
-		for adjacent in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
+	for adjacent in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
 
-			if currentSquare.position[0] + adjacent[0] < 0 or currentSquare.position[0] + adjacent[0] == board[0] or currentSquare.position[1] + adjacent[1] < 0 or currentSquare.position[1] + adjacent[1] == board[1]:
-				continue
+		if currentSquare.position[0] + adjacent[0] < 0 or currentSquare.position[0] + adjacent[0] == board[0] or \
+				currentSquare.position[1] + adjacent[1] < 0 or currentSquare.position[1] + adjacent[1] == board[1]:
+			continue
 
-			childSquare = squares[currentSquare.position[0] + adjacent[0]][currentSquare.position[1] + adjacent[1]]
+		childSquare = squares[currentSquare.position[0] + adjacent[0]][currentSquare.position[1] + adjacent[1]]
 
-			if childSquare.isBlocked:
-				continue
+		if childSquare.isBlocked:
+			continue
 
-			for closed in closed_list:
-				if childSquare == closed:
-					continue
+		if childSquare in closed_list:
+			continue
 
-			potentialG = currentSquare.g + 10
+		moveCost = 1
+		if adjacent[0] != 0 and adjacent[1] != 0:
+			moveCost = 1.5
 
-			for openS in open_list:
-				if childSquare.position == openS.position and potentialG > openS.g:
-					continue
+		possibleG = currentSquare.g + moveCost
 
-			childSquare.parent = currentSquare
-			childSquare.g = currentSquare.g + 10
-			childSquare.h = childSquare.calculateH()
-			childSquare.f = childSquare.g + childSquare.h
+		if (childSquare.f, childSquare) in open_list and possibleG > childSquare.g:
+			continue
 
-			open_list.append(childSquare)
+		childSquare.g = currentSquare.g + moveCost
+		childSquare.h = childSquare.calculateH()
+		childSquare.f = childSquare.g + childSquare.h
+		childSquare.parent = currentSquare
 
+		heappush(open_list, (childSquare.f, childSquare))
+		childSquare.closeNode()
+		pygame.display.update()
+
+
+# State variables for pygame
+running = True
+colorSquares = False
+search = False
+displayPath = False
 
 while running:
 	pygame.display.update()
@@ -202,6 +206,15 @@ while running:
 				if square.check():
 					square.click()
 
+	if search and len(open_list) > 0:
+		finish = startSearch()
+
+	if displayPath and not finish.isStartPoint:
+		finish.choosePath()
+		finish = finish.parent
+		pygame.display.update()
+		t.sleep(0.2)
+
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
@@ -213,4 +226,4 @@ while running:
 			colorSquares = False
 		elif event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_SPACE:
-				startSearch()
+				search = True
