@@ -1,6 +1,7 @@
 import numpy as np
 import random as r
 import matplotlib.pyplot as plt
+colors = ('b', 'g', 'r', 'c', 'm')
 
 # ILOSC SKOKOW
 J = 1000
@@ -16,26 +17,28 @@ yGauss = np.zeros((N, J))
 yCauchy = np.zeros((N, J))
 
 
-def UnitDistance(N=0, i=1):
+# Funkcje obliczające J'ty skok dla N'tej cząsteczki
+def UnitDistance(N=0, J=1):
 	angle = r.uniform(0, 360)
 	delX = np.cos(angle)
 	delY = np.sin(angle)
-	xUnit[N][i] = xUnit[N][i-1] + delX
-	yUnit[N][i] = yUnit[N][i-1] + delY
+	xUnit[N][J] = xUnit[N][J-1] + delX
+	yUnit[N][J] = yUnit[N][J-1] + delY
 
 
-def GaussDistance(N=0, i=1):
+def GaussDistance(N=0, J=1):
 	delX = r.gauss(0, 1)
 	delY = r.gauss(0, 1)
-	xGauss[N][i] = xGauss[N][i-1] + delX
-	yGauss[N][i] = yGauss[N][i-1] + delY
+	xGauss[N][J] = xGauss[N][J-1] + delX
+	yGauss[N][J] = yGauss[N][J-1] + delY
 
 
-def CauchyDistance(N=0, i=1):
+def CauchyDistance(N=0, J=1):
 	delX = np.tan(-np.pi/2 + np.pi*r.random())
 	delY = np.tan(-np.pi/2 + np.pi*r.random())
-	xCauchy[N][i] = xCauchy[N][i-1] + delX
-	yCauchy[N][i] = yCauchy[N][i-1] + delY
+	xCauchy[N][J] = xCauchy[N][J-1] + delX
+	yCauchy[N][J] = yCauchy[N][J-1] + delY
+# -----
 
 
 def BrownianMove(N):
@@ -48,9 +51,9 @@ def BrownianMove(N):
 for i in range(N):
 	BrownianMove(i)
 
+# PIERWSZY PANEL
 plt.figure(figsize=(17, 9))
 plt.subplots_adjust(left=0.05, bottom=0.03, right=0.97, top=0.93, wspace=0.13, hspace=0.21)
-
 # Skok jednostkowy plot
 plt.subplot(331)
 plt.title('Skok jednostkowy')
@@ -106,4 +109,27 @@ plt.plot(np.sqrt(xCauchy.std(0)**2 + yCauchy.std(0)**2), 'r-')
 # ------
 
 plt.suptitle("Autor: Mateusz Litwin", fontsize=14)
+plt.show()
+
+# DRUGI PANEL
+plt.figure(figsize=(12, 9))
+plt.subplots_adjust(left=0.06, bottom=0.06, right=0.97, top=0.96, wspace=0.17, hspace=0.33)
+# Wykresy 5 różnych cząsteczek z kolejnych przypadków
+plt.subplot(311)
+plt.title("5 cząsteczek o skoku jednostkowym")
+for i, color in enumerate(colors):
+	plt.plot(xUnit[i], yUnit[i], color, label=f'Cząsteczka nr {i+1}')
+plt.legend(loc=2)
+
+plt.subplot(312)
+plt.title("5 cząsteczek o skoku z rozkładu Gaussa")
+for i, color in enumerate(colors):
+	plt.plot(xGauss[i], yGauss[i], color, label=f'Cząsteczka nr {i+1}')
+plt.legend(loc=2)
+
+plt.subplot(313)
+plt.title("5 cząsteczek o skoku z rozkładu Cauchy'ego")
+for i, color in enumerate(colors):
+	plt.plot(xCauchy[i], yCauchy[i], color, label=f'Cząsteczka nr {i+1}')
+plt.legend(loc=2)
 plt.show()
