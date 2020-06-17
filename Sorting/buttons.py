@@ -1,14 +1,15 @@
 import pygame as p
 from colors import *
 
-numOfElements = 300
 shuffle = False
 bubble = False
 selection = False
+shell = False
+
 shuffleCount = 0
 bubbleIndex = [0, 0]
 selectionIndex = [0, 0]
-
+gap = 150
 
 class MyButton:
 	def __init__(self, width, height, text, x, y):
@@ -36,21 +37,32 @@ class MyButton:
 
 class Shuffler(MyButton):
 	def Click(self):
-		global shuffle, bubble, shuffleCount
+		global shuffle, bubble, selection, shuffleCount
 		shuffleCount = 0
 		bubble = False
+		selection = False
 		shuffle = True
 
 
 class BubbleSorter(MyButton):
 	def Click(self):
-		global bubble, bubbleIndex
+		global shuffle, bubble, bubbleIndex
+		shuffle = False
 		bubbleIndex = [0, 0]
 		bubble = True
 
 
 class SelectionSorter(MyButton):
 	def Click(self):
-		global selection, selectionIndex
+		global shuffle, selection, selectionIndex
+		shuffle = False
 		selectionIndex = [0, 0]
 		selection = True
+
+
+class ShellSorter(MyButton):
+	def Click(self):
+		global shuffle, shell, gap
+		gap = 150
+		shuffle = False
+		shell = True

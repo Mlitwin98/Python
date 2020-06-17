@@ -7,6 +7,7 @@ import elements as e
 from colors import *
 
 p.init()
+numOfElements = 300
 WIDTH = 900
 HEIGHT = 900
 screen = p.display.set_mode((WIDTH, HEIGHT))
@@ -17,12 +18,13 @@ screen.fill(lightgray)
 
 buttons = [b.Shuffler(120, 100, 'Shuffle', 5, 795),
 		   b.BubbleSorter(120, 100, 'Bubble Sort', 130, 795),
-		   b.SelectionSorter(130, 100, 'Selection Sort', 255, 795)]
+		   b.SelectionSorter(130, 100, 'Selection Sort', 255, 795),
+		   b.ShellSorter(120, 100, 'Shell Sort', 390, 795)]
 elements = []
-for i in range(b.numOfElements):
+for i in range(numOfElements):
 	color = c.hls_to_rgb(1 - i*10**-2, 0.5, 1)
 	clr = [e * 255 for e in color]
-	elements.append(e.Element(3, -i*2.5, 3*i, 790, clr, i))
+	elements.append(e.Element(WIDTH/numOfElements, -i*2.5, WIDTH/numOfElements*i, 790, clr, i))
 
 
 def DrawButtons():
@@ -36,10 +38,10 @@ def DrawElements():
 
 
 def ShuffleStep():
-	r1 = r.randint(0, b.numOfElements - 1)
-	r2 = r.randint(0, b.numOfElements - 1)
+	r1 = r.randint(0, numOfElements - 1)
+	r2 = r.randint(0, numOfElements - 1)
 	while r2 == r1:
-		r2 = r.randint(0, b.numOfElements - 1)
+		r2 = r.randint(0, numOfElements - 1)
 
 	elements[r1], elements[r2] = elements[r2], elements[r1]
 	elements[r1].SwitchPlaces(elements[r2], screen)
@@ -67,13 +69,51 @@ def BubbleSortHandle():
 	elif b.bubbleIndex[0] == len(elements):
 		b.bubble = False
 
+# To fix
+def SelectionSortHandle():
+	if b.selection and b.selectionIndex[0] < len(elements) - 1:
+		min_i = b.selectionIndex[0]
+		b.selectionIndex[1] = min_i + 1
+		while b.selectionIndex[1] < len(elements):
+			if elements[b.selectionIndex[1]].value < elements[min_i].value:
+				min_i = b.selectionIndex[1]
+
+			b.selectionIndex[1] += 1
+		else:
+			elements[min_i], elements[b.selectionIndex[0]] = elements[b.selectionIndex[0]], elements[min_i]
+			elements[b.selectionIndex[0]].SwitchPlaces(elements[min_i], screen)
+			b.selectionIndex[0] += 1
+	elif b.selectionIndex[0] == len(elements):
+		b.bubble = False
+
+ind = b.gap
+def ShellSortHandle():
+	global ind
+	if b.shell and b.gap > 0:
+		if ind < len(elements):
+			tmp = elements[ind]
+			j = ind
+			while j >= b.gap and elements[j-b.gap].value > tmp.value:
+				elements[j], elements[j-b.gap] = elements[j-b.gap], elements[j]
+				elements[j].SwitchPlaces(elements[j-b.gap], screen)
+				j -= b.gap
+			elements[j] = tmp
+			ind += 1
+		else:
+			b.gap //= 2
+			ind = b.gap
+	elif b.gap == 0:
+		b.shell = False
+
 
 running = True
 while running:
 	p.display.update()
 
-	BubbleSortHandle()
 	ShuffleHandle()
+	BubbleSortHandle()
+	SelectionSortHandle()
+	ShellSortHandle()
 	DrawButtons()
 	DrawElements()
 
