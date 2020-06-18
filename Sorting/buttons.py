@@ -1,15 +1,6 @@
 import pygame as p
 from colors import *
 
-shuffle = False
-bubble = False
-selection = False
-shell = False
-
-shuffleCount = 0
-bubbleIndex = [0, 0]
-selectionIndex = [0, 0]
-gap = 150
 
 class MyButton:
 	def __init__(self, width, height, text, x, y):
@@ -36,33 +27,68 @@ class MyButton:
 
 
 class Shuffler(MyButton):
+	def __init__(self, width, height, text, x, y):
+		MyButton.__init__(self, width, height, text, x, y)
+		self.shuffle = False
+
 	def Click(self):
-		global shuffle, bubble, selection, shuffleCount
-		shuffleCount = 0
-		bubble = False
-		selection = False
-		shuffle = True
+		self.shuffle = True
 
 
 class BubbleSorter(MyButton):
+	def __init__(self, width, height, text, x, y):
+		MyButton.__init__(self, width, height, text, x, y)
+		self.bubbleIndex = [0, 0]
+		self.sort = False
+
 	def Click(self):
-		global shuffle, bubble, bubbleIndex
-		shuffle = False
-		bubbleIndex = [0, 0]
-		bubble = True
+		self.bubbleIndex = [0, 0]
+		self.sort = True
 
 
 class SelectionSorter(MyButton):
+	def __init__(self, width, height, text, x, y):
+		MyButton.__init__(self, width, height, text, x, y)
+		self.selectionIndex = [0, 0]
+		self.sort = False
+
 	def Click(self):
-		global shuffle, selection, selectionIndex
-		shuffle = False
-		selectionIndex = [0, 0]
-		selection = True
+		self.selectionIndex = [0, 0]
+		self.sort = True
 
 
 class ShellSorter(MyButton):
+	def __init__(self, width, height, text, x, y, gap):
+		MyButton.__init__(self, width, height, text, x, y)
+		self.gap = gap
+		self.tmp = gap
+		self.sort = False
+
 	def Click(self):
-		global shuffle, shell, gap
-		gap = 150
-		shuffle = False
-		shell = True
+		self.gap = self.tmp
+		# ZROBIC COS Z SHUFFLEM
+		#self.shuffle = False
+		self.sort = True
+
+
+class CocktailSorter(MyButton):
+	def __init__(self, width, height, text, x, y, start, end):
+		MyButton.__init__(self, width, height, text, x, y)
+		self.tmp = (start, end)
+		self.cocktailStart = start
+		self.cocktailEnd = end
+		self.sort = False
+
+	def Click(self):
+		self.cocktailStart = self.tmp[0]
+		self.cocktailEnd = self.tmp[1]
+		self.sort = True
+
+
+class MergeSorter(MyButton):
+	def __init__(self, width, height, text, x, y):
+		MyButton.__init__(self, width, height, text, x, y)
+		self.sort = False
+
+	def Click(self):
+		self.sort = True
