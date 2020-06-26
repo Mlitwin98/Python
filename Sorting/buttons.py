@@ -66,8 +66,6 @@ class ShellSorter(MyButton):
 
 	def Click(self):
 		self.gap = self.tmp
-		# ZROBIC COS Z SHUFFLEM
-		#self.shuffle = False
 		self.sort = True
 
 
@@ -85,10 +83,24 @@ class CocktailSorter(MyButton):
 		self.sort = True
 
 
-class MergeSorter(MyButton):
+class InsertionSorter(MyButton):
 	def __init__(self, width, height, text, x, y):
 		MyButton.__init__(self, width, height, text, x, y)
+		self.sort = False
+		self.index = 1
+
+	def Click(self):
+		self.sort = True
+		self.index = 1
+
+
+class PancakeSorter(MyButton):
+	def __init__(self, width, height, text, x, y, size):
+		MyButton.__init__(self, width, height, text, x, y)
+		self.size = size
+		self.tmp = size
 		self.sort = False
 
 	def Click(self):
 		self.sort = True
+		self.size = self.tmp

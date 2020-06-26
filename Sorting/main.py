@@ -27,9 +27,11 @@ for i in range(numOfElements):
 sh = Shuffler(120, 100, 'Shuffle', 5, 795)
 bs = BubbleSorter(120, 100, 'Bubble Sort', 130, 795)
 ss = SelectionSorter(130, 100, 'Selection Sort', 255, 795)
-shs = ShellSorter(120, 100, 'Shell Sort', 390, 795, numOfElements//2)
-cs = CocktailSorter(120, 100, 'Cocktail Sort', 515, 795, 0, numOfElements-1)
-buttons = [sh, bs, ss, shs, cs]
+shs = ShellSorter(110, 100, 'Shell Sort', 390, 795, numOfElements//2)
+cs = CocktailSorter(120, 100, 'Cocktail Sort', 505, 795, 0, numOfElements-1)
+ins = InsertionSorter(130, 100, 'Insertion Sort', 630, 795)
+ps = PancakeSorter(130, 100, 'Pancake Sort', 765, 795, len(elements))
+buttons = [sh, bs, ss, shs, cs, ins, ps]
 
 
 # DRAWING
@@ -66,7 +68,7 @@ def ShuffleHandle():
 def BubbleSort():
 	if bs.sort and bs.bubbleIndex[0] < len(elements) and not sh.shuffle:
 		while bs.bubbleIndex[1] < len(elements) - bs.bubbleIndex[0] - 1:
-			if elements[bs.bubbleIndex[1]].value > elements[bs.bubbleIndex[1] + 1].value:
+			if elements[bs.bubbleIndex[1]] > elements[bs.bubbleIndex[1] + 1]:
 				elements[bs.bubbleIndex[1]], elements[bs.bubbleIndex[1] + 1] = elements[bs.bubbleIndex[1] + 1], elements[
 					bs.bubbleIndex[1]]
 				elements[bs.bubbleIndex[1]].SwitchPlaces(elements[bs.bubbleIndex[1] + 1], screen)
@@ -77,13 +79,14 @@ def BubbleSort():
 	elif sh.shuffle:
 		bs.sort = False
 
+
 	# SELECTION
 def SelectionSort():
 	if ss.sort and ss.selectionIndex[0] < len(elements) - 1 and not sh.shuffle:
 		min_i = ss.selectionIndex[0]
 		ss.selectionIndex[1] = min_i + 1
 		while ss.selectionIndex[1] < len(elements):
-			if elements[ss.selectionIndex[1]].value < elements[min_i].value:
+			if elements[ss.selectionIndex[1]] < elements[min_i]:
 				min_i = ss.selectionIndex[1]
 
 			ss.selectionIndex[1] += 1
@@ -93,6 +96,7 @@ def SelectionSort():
 			ss.selectionIndex[0] += 1
 	elif sh.shuffle:
 		ss.sort = False
+
 
 	# SHELL
 ind = shs.gap
@@ -104,7 +108,7 @@ def ShellSort():
 		if ind < len(elements):
 			tmp = elements[ind]
 			j = ind
-			while j >= shs.gap and elements[j - shs.gap].value > tmp.value:
+			while j >= shs.gap and elements[j - shs.gap] > tmp:
 				elements[j], elements[j - shs.gap] = elements[j - shs.gap], elements[j]
 				elements[j].SwitchPlaces(elements[j - shs.gap], screen)
 				j -= shs.gap
@@ -123,7 +127,7 @@ def CocktailSort():
 		cs.sort = False
 
 		for i in range(cs.cocktailStart, cs.cocktailEnd):
-			if elements[i].value > elements[i + 1].value:
+			if elements[i] > elements[i + 1]:
 				elements[i], elements[i + 1] = elements[i + 1], elements[i]
 				elements[i].SwitchPlaces(elements[i + 1], screen)
 				cs.sort = True
@@ -132,7 +136,7 @@ def CocktailSort():
 		cs.cocktailEnd -= 1
 
 		for i in range(cs.cocktailEnd - 1, cs.cocktailStart - 1, -1):
-			if elements[i].value > elements[i + 1].value:
+			if elements[i] > elements[i + 1]:
 				elements[i], elements[i + 1] = elements[i + 1], elements[i]
 				elements[i].SwitchPlaces(elements[i + 1], screen)
 				cs.sort = True
@@ -140,6 +144,50 @@ def CocktailSort():
 		cs.cocktailStart += 1
 	elif sh.shuffle:
 		cs.sort = False
+
+
+	# INSERTION
+def InsertionSort():
+	if ins.sort and not sh.shuffle:
+		if ins.index < len(elements):
+			tmp = elements[ins.index]
+			j = ins.index - 1
+			while j >= 0 and tmp < elements[j]:
+				elements[j+1], elements[j] = elements[j], elements[j+1]
+				elements[j+1].SwitchPlaces(elements[j], screen)
+				j -= 1
+
+			elements[j+1] = tmp
+			tmp.SwitchPlaces(elements[j+1], screen)
+			ins.index += 1
+		elif ins.index == len(elements):
+			ins.sort = False
+
+
+	# PANCAKE
+def flip(i):
+	start = 0
+	while start < i:
+		elements[start], elements[i] = elements[i], elements[start]
+		elements[start].SwitchPlaces(elements[i], screen)
+		start += 1
+		i -= 1
+
+
+def PancakeSort():
+	if ps.sort and not sh.shuffle:
+		if ps.size > 1:
+			maxI = 0
+			for i in range(0, ps.size):
+				if elements[i] > elements[maxI]:
+					maxI = i
+
+			if maxI != ps.size-1:
+				flip(maxI)
+				flip(ps.size-1)
+			ps.size -= 1
+	elif ps.size == 1:
+		ps.sort = False
 
 
 # GAME LOOP
@@ -153,6 +201,8 @@ while running:
 	SelectionSort()
 	ShellSort()
 	CocktailSort()
+	InsertionSort()
+	PancakeSort()
 
 	DrawButtons()
 	DrawElements()

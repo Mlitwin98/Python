@@ -17,3 +17,9 @@ class Element:
 	def SwitchPlaces(self, other, screen):
 		screen.fill(lightgray)
 		self.x, other.x = other.x, self.x
+
+	def __lt__(self, other):
+		return self.value < other.value
+
+	def __gt__(self, other):
+		return self.value > other.value
