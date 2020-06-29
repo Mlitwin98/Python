@@ -8,19 +8,19 @@ screen.fill(white)
 p.font.init()
 font = p.font.SysFont('Arial', 40)
 
-example = (6, 3, 0, 0, 2, 0, 0, 0, 9,
-		   0, 4, 0, 5, 3, 1, 0, 0, 2,
-		   0, 7, 5, 0, 4, 9, 0, 3, 1,
-		   8, 0, 0, 4, 0, 6, 1, 0, 0,
-		   0, 0, 0, 2, 1, 0, 3, 9, 6,
-		   0, 0, 0, 7, 0, 3, 2, 0, 4,
-		   3, 8, 7, 0, 0, 0, 4, 0, 0,
-		   4, 0, 2, 1, 0, 0, 0, 6, 3,
-		   0, 0, 0, 0, 7, 0, 0, 0, 0)
+example = [[6, 3, 0, 0, 2, 0, 0, 0, 9],
+		   [0, 4, 0, 5, 3, 1, 0, 0, 2],
+		   [0, 7, 5, 0, 4, 9, 0, 3, 1],
+		   [8, 0, 0, 4, 0, 6, 1, 0, 0],
+		   [0, 0, 0, 2, 1, 0, 3, 9, 6],
+		   [0, 0, 0, 7, 0, 3, 2, 0, 4],
+		   [3, 8, 7, 0, 0, 0, 4, 0, 0],
+		   [4, 0, 2, 1, 0, 0, 0, 6, 3],
+		   [0, 0, 0, 0, 7, 0, 0, 0, 0]]
 
 
 class square:
-	def __init__(self, x, y, scr, text=0):
+	def __init__(self, x, y, scr, editable, text=0, color=black):
 		self.x = x
 		self.y = y
 		self.rect = p.Rect(x, y, 100, 100)
@@ -28,8 +28,9 @@ class square:
 			self.text_val = ''
 		else:
 			self.text_val = str(text)
-		self.text = font.render(self.text_val, True, black)
+		self.text = font.render(self.text_val, True, color)
 		self.screen = scr
+		self.editable = editable
 		self.focused = False
 		self.value = text
 
@@ -39,10 +40,15 @@ class square:
 		self.screen.blit(self.text, text_rect)
 
 	def UpdateText(self, text):
-		p.draw.rect(self.screen, white, self.rect, 0)
-		self.text = font.render(str(text), True, black)
-		p.draw.rect(self.screen, green, self.rect, 5)
-		self.value = text
+		if self.editable:
+			if text == 0:
+				new_val = ''
+			else:
+				new_val = str(text)
+			p.draw.rect(self.screen, white, self.rect, 0)
+			self.text = font.render(new_val, True, lightblue)
+			p.draw.rect(self.screen, green, self.rect, 5)
+			self.value = text
 
 	def CheckIfMouseOver(self):
 		# noinspection PyArgumentList
@@ -76,7 +82,10 @@ class line:
 sqaures = []
 for i in range(9):
 	for j in range(9):
-		sqaures.append(square(j*100, i*100, screen, example[i*9 + j]))
+		if example[i][j] == 0:
+			sqaures.append(square(j*100, i*100, screen, True, example[i][j]))
+		else:
+			sqaures.append(square(j * 100, i * 100, screen, False, example[i][j]))
 
 # INITIALIZE LINES
 lines = []
