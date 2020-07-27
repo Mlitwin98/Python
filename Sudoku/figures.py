@@ -20,7 +20,7 @@ example = [[6, 3, 0, 0, 2, 0, 0, 0, 9],
 
 
 class square:
-	def __init__(self, x, y, scr, editable, text=0, color=black):
+	def __init__(self, x=0, y=0, scr=None, editable=None, text=0, color=black):
 		self.x = x
 		self.y = y
 		self.rect = p.Rect(x, y, 100, 100)
@@ -45,21 +45,37 @@ class square:
 				new_val = ''
 			else:
 				new_val = str(text)
+			self.value = text
 			p.draw.rect(self.screen, white, self.rect, 0)
 			self.text = font.render(new_val, True, lightblue)
 			p.draw.rect(self.screen, green, self.rect, 5)
-			self.value = text
 
 	def CheckIfMouseOver(self):
 		# noinspection PyArgumentList
 		return self.rect.collidepoint(p.mouse.get_pos())
 
 	def Click(self):
-		for sq in sqaures:
-			p.draw.rect(self.screen, white, sq.rect, 5)
-			sq.focused = False
+		for row in range(9):
+			for sq in squares[row]:
+				p.draw.rect(self.screen, white, sq.rect, 5)
+				sq.focused = False
 		p.draw.rect(self.screen, green, self.rect, 5)
 		self.focused = True
+
+	def Erase(self):
+		if self.editable:
+			self.text = font.render('', True, white)
+			self.value = 0
+			p.draw.rect(self.screen, white, self.rect, 0)
+			p.draw.rect(self.screen, green, self.rect, 5)
+
+	def ChangeBackground(self, color):
+		if self.editable and self.focused:
+			p.draw.rect(self.screen, color, self.rect, 0)
+			p.draw.rect(self.screen, green, self.rect, 5)
+		else:
+			p.draw.rect(self.screen, color, self.rect, 0)
+			p.draw.rect(self.screen, white, self.rect, 5)
 
 
 class line:
@@ -79,13 +95,13 @@ class line:
 
 
 # INITIALIZE SQUARES
-sqaures = []
+squares = [[square() for i in range(9)] for j in range(9)]
 for i in range(9):
 	for j in range(9):
 		if example[i][j] == 0:
-			sqaures.append(square(j*100, i*100, screen, True, example[i][j]))
+			squares[i][j] = square(j * 100, i * 100, screen, True, example[i][j])
 		else:
-			sqaures.append(square(j * 100, i * 100, screen, False, example[i][j]))
+			squares[i][j] = square(j * 100, i * 100, screen, False, example[i][j])
 
 # INITIALIZE LINES
 lines = []
@@ -98,8 +114,9 @@ for i in range(2):
 
 
 def DrawSquares():
-	for sq in sqaures:
-		sq.Draw()
+	for row in range(9):
+		for sq in squares[row]:
+			sq.Draw()
 
 
 def DrawLines():
@@ -108,6 +125,92 @@ def DrawLines():
 
 
 def ChangeSquareText(text):
-	for sq in sqaures:
-		if sq.focused:
-			sq.UpdateText(text)
+	for row in range(9):
+		for col in range(9):
+			if squares[row][col].focused:
+				mistake = False
+				squares[row][col].UpdateText(text)
+				check = CheckValue(squares[row][col].value, row, col)
+				if check[0] or check[1] or check[2]:
+					mistake = True
+				if mistake:
+					WrongAnswer(row, col)
+				else:
+					PossibleAnswer(row, col)
+
+
+def CheckWholeBoard():
+	for row in range(9):
+		for col in range(9):
+			if squares[row][col].editable and not squares[row][col].focused:
+				mistake = False
+				check = CheckValue(squares[row][col].value, row, col)
+				if check[0] or check[1] or check[2]:
+					mistake = True
+				if mistake:
+					WrongAnswer(row, col)
+				else:
+					PossibleAnswer(row, col)
+
+
+def EraseSquareText():
+	for row in range(9):
+		for sq in squares[row]:
+			if sq.focused:
+				sq.Erase()
+
+
+# CHECK ANSWER
+def CheckIfValueInBigSquare(value, squareRow, squareCol):
+	if value == 0:
+		return False
+	count = 0
+	for row in range(3):
+		for col in range(3):
+			if value == squares[row + 3 * squareRow][col + 3 * squareCol].value:
+				count += 1
+	if count > 1:
+		return True
+	else:
+		return False
+
+
+def CheckIfValueInRow(value, row):
+	if value == 0:
+		return False
+	count = 0
+	for sq in squares[row]:
+		if sq.value == value:
+			count += 1
+	if count > 1:
+		return True
+	else:
+		return False
+
+
+def CheckIfValueInColumn(value, col):
+	if value == 0:
+		return False
+	count = 0
+	for r in range(9):
+		if squares[r][col].value == value:
+			count += 1
+	if count > 1:
+		return True
+	else:
+		return False
+
+
+def CheckValue(value, row, column):
+	r = CheckIfValueInRow(value, row)
+	c = CheckIfValueInColumn(value, column)
+	s = CheckIfValueInBigSquare(value, row//3, column//3)
+	return r, c, s
+
+
+def WrongAnswer(row, col):
+	squares[row][col].ChangeBackground(red)
+
+
+def PossibleAnswer(row, col):
+	squares[row][col].ChangeBackground(white)

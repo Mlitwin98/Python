@@ -6,6 +6,7 @@ p.display.set_caption("SUDOKU")
 running = True
 while running:
 	p.display.update()
+	CheckWholeBoard()
 	DrawSquares()
 	DrawLines()
 	for event in p.event.get():
@@ -14,9 +15,10 @@ while running:
 			p.quit()
 			quit()
 		elif event.type == p.MOUSEBUTTONDOWN:
-			for sq in sqaures:
-				if sq.CheckIfMouseOver():
-					sq.Click()
+			for row in range(9):
+				for sq in squares[row]:
+					if sq.CheckIfMouseOver():
+						sq.Click()
 		elif event.type == p.KEYDOWN:
 			if event.key == p.K_1:
 				ChangeSquareText(1)
@@ -36,3 +38,5 @@ while running:
 				ChangeSquareText(8)
 			elif event.key == p.K_9:
 				ChangeSquareText(9)
+			elif event.key == p.K_BACKSPACE:
+				EraseSquareText()
