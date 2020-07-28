@@ -5,6 +5,14 @@ class validator:
 	def __init__(self):
 		pass
 
+	@staticmethod
+	def CheckIfEmptySpaces(squares):
+		for row in range(9):
+			for sq in squares[row]:
+				if sq.value == 0:
+					return True
+		return False
+
 	# 3x3 SQUARE
 	@staticmethod
 	def CheckIfValueInBigSquare(squares, value, squareRow, squareCol):
@@ -73,5 +81,7 @@ class validator:
 						mistake = True
 					if mistake:
 						self.WrongAnswer(squares, row, col)
+						return False
 					else:
 						self.PossibleAnswer(squares, row, col)
+						return True

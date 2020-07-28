@@ -1,5 +1,6 @@
 import pygame as p
 from colors import *
+from examples import *
 from validator import validator
 
 WIDTH = 900
@@ -10,19 +11,9 @@ p.font.init()
 font = p.font.SysFont('Arial', 40)
 val = validator()
 
-example = [[6, 3, 0, 0, 2, 0, 0, 0, 9],
-		   [0, 4, 0, 5, 3, 1, 0, 0, 2],
-		   [0, 7, 5, 0, 4, 9, 0, 3, 1],
-		   [8, 0, 0, 4, 0, 6, 1, 0, 0],
-		   [0, 0, 0, 2, 1, 0, 3, 9, 6],
-		   [0, 0, 0, 7, 0, 3, 2, 0, 4],
-		   [3, 8, 7, 0, 0, 0, 4, 0, 0],
-		   [4, 0, 2, 1, 0, 0, 0, 6, 3],
-		   [0, 0, 0, 0, 7, 0, 0, 0, 0]]
-
 
 class square:
-	def __init__(self, x=0, y=0, scr=None, editable=None, text=0, color=black):
+	def __init__(self, x=0, y=0, editable=None, text=0, color=black):
 		self.x = x
 		self.y = y
 		self.rect = p.Rect(x, y, 100, 100)
@@ -31,15 +22,14 @@ class square:
 		else:
 			self.text_val = str(text)
 		self.text = font.render(self.text_val, True, color)
-		self.screen = scr
 		self.editable = editable
 		self.focused = False
 		self.value = text
 
 	def Draw(self):
-		p.draw.rect(self.screen, black, self.rect, 1)
+		p.draw.rect(screen, black, self.rect, 1)
 		text_rect = self.text.get_rect(center=(self.x+50, self.y+50))
-		self.screen.blit(self.text, text_rect)
+		screen.blit(self.text, text_rect)
 
 	def UpdateText(self, text):
 		if self.editable:
@@ -48,9 +38,9 @@ class square:
 			else:
 				new_val = str(text)
 			self.value = text
-			p.draw.rect(self.screen, white, self.rect, 0)
+			p.draw.rect(screen, white, self.rect, 0)
 			self.text = font.render(new_val, True, lightblue)
-			p.draw.rect(self.screen, green, self.rect, 5)
+			p.draw.rect(screen, green, self.rect, 5)
 
 	def CheckIfMouseOver(self):
 		# noinspection PyArgumentList
@@ -59,25 +49,25 @@ class square:
 	def Click(self):
 		for row in range(9):
 			for sq in squares[row]:
-				p.draw.rect(self.screen, white, sq.rect, 5)
+				p.draw.rect(screen, white, sq.rect, 5)
 				sq.focused = False
-		p.draw.rect(self.screen, green, self.rect, 5)
+		p.draw.rect(screen, green, self.rect, 5)
 		self.focused = True
 
 	def Erase(self):
 		if self.editable:
 			self.text = font.render('', True, white)
 			self.value = 0
-			p.draw.rect(self.screen, white, self.rect, 0)
-			p.draw.rect(self.screen, green, self.rect, 5)
+			p.draw.rect(screen, white, self.rect, 0)
+			p.draw.rect(screen, green, self.rect, 5)
 
 	def ChangeBackground(self, color):
 		if self.editable and self.focused:
-			p.draw.rect(self.screen, color, self.rect, 0)
-			p.draw.rect(self.screen, green, self.rect, 5)
+			p.draw.rect(screen, color, self.rect, 0)
+			p.draw.rect(screen, green, self.rect, 5)
 		else:
-			p.draw.rect(self.screen, color, self.rect, 0)
-			p.draw.rect(self.screen, white, self.rect, 5)
+			p.draw.rect(screen, color, self.rect, 0)
+			p.draw.rect(screen, white, self.rect, 5)
 
 
 class line:
@@ -101,9 +91,9 @@ squares = [[square() for i in range(9)] for j in range(9)]
 for i in range(9):
 	for j in range(9):
 		if example[i][j] == 0:
-			squares[i][j] = square(j * 100, i * 100, screen, True, example[i][j])
+			squares[i][j] = square(j * 100, i * 100, True, example[i][j])
 		else:
-			squares[i][j] = square(j * 100, i * 100, screen, False, example[i][j])
+			squares[i][j] = square(j * 100, i * 100, False, example[i][j])
 # ----------------
 
 # INITIALIZE LINES
