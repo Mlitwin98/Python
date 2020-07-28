@@ -6,7 +6,7 @@ p.display.set_caption("SUDOKU")
 running = True
 while running:
 	p.display.update()
-	CheckWholeBoard()
+	val.CheckWholeBoard(squares)
 	DrawSquares()
 	DrawLines()
 	for event in p.event.get():
