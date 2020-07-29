@@ -13,18 +13,18 @@ val = validator()
 
 
 class square:
-	def __init__(self, x=0, y=0, editable=None, text=0, color=black):
+	def __init__(self, x=0, y=0, editable=None, value=0, color=black):
 		self.x = x
 		self.y = y
 		self.rect = p.Rect(x, y, 100, 100)
-		if text == 0:
+		if value == 0:
 			self.text_val = ''
 		else:
-			self.text_val = str(text)
+			self.text_val = str(value)
 		self.text = font.render(self.text_val, True, color)
 		self.editable = editable
 		self.focused = False
-		self.value = text
+		self.value = value
 		self.background = white
 
 	def Draw(self):
@@ -35,13 +35,13 @@ class square:
 		if self.focused:
 			p.draw.rect(screen, green, self.rect, 5)
 
-	def UpdateText(self, text):
+	def UpdateText(self, value):
 		if self.editable:
-			if text == 0:
+			if value == 0:
 				new_val = ''
 			else:
-				new_val = str(text)
-			self.value = text
+				new_val = str(value)
+			self.value = value
 			self.text = font.render(new_val, True, lightblue)
 
 	def CheckIfMouseOver(self):
@@ -61,6 +61,12 @@ class square:
 
 	def ChangeBackground(self, color):
 		self.background = color
+
+	def WrongAnswer(self):
+		self.ChangeBackground(red)
+
+	def PossibleAnswer(self):
+		self.ChangeBackground(white)
 
 
 class line:
@@ -119,9 +125,9 @@ def ChangeSquareText(text):
 				squares[row][col].UpdateText(text)
 				check = val.CheckValue(squares, squares[row][col].value, row, col)
 				if check[0] or check[1] or check[2]:
-					val.WrongAnswer(squares, row, col)
+					squares[row][col].WrongAnswer()
 				else:
-					val.PossibleAnswer(squares, row, col)
+					squares[row][col].PossibleAnswer()
 				val.CheckWholeBoard(squares)
 
 
@@ -131,4 +137,5 @@ def EraseSquareText():
 			if sq.focused:
 				sq.Erase()
 				val.CheckWholeBoard(squares)
+				sq.ChangeBackground(white)
 # ---------------

@@ -11,14 +11,13 @@ solve = False
 
 def DisplayWin():
 	global canPlay
-	if not val.CheckIfEmptySpaces(squares):
-		if val.CheckWholeBoard(squares):
-			p.draw.rect(screen, lightgray, p.Rect(100, 200, 700, 500), 0)
-			fontWin = p.font.SysFont('Arial', 150)
-			text = fontWin.render("You won", True, black)
-			text_rect = text.get_rect(center=(450, 450))
-			screen.blit(text, text_rect)
-			canPlay = False
+	if val.CheckWholeBoard(squares) and not val.CheckIfEmptySpaces(squares):
+		p.draw.rect(screen, lightgray, p.Rect(100, 200, 700, 500), 0)
+		fontWin = p.font.SysFont('Arial', 150)
+		text = fontWin.render("You won", True, black)
+		text_rect = text.get_rect(center=(450, 450))
+		screen.blit(text, text_rect)
+		canPlay = False
 
 
 while running:

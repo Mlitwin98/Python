@@ -23,7 +23,6 @@ def Solve(squares):
 	if startR < 9:
 		if startC < 9:
 			if squares[startR][startC].value == 0:
-				print(startR, startC)
 				squares[startR][startC].focused = True
 				num = 1
 				ChangeSquareText(num)

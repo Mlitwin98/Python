@@ -1,6 +1,3 @@
-from colors import *
-
-
 class validator:
 	def __init__(self):
 		pass
@@ -63,22 +60,15 @@ class validator:
 		s = self.CheckIfValueInBigSquare(squares, value, row // 3, column // 3)
 		return r, c, s
 
-	@staticmethod
-	def WrongAnswer(squares, row, col):
-		squares[row][col].ChangeBackground(red)
-
-	@staticmethod
-	def PossibleAnswer(squares, row, col):
-		squares[row][col].ChangeBackground(white)
-
 	def CheckWholeBoard(self, squares):
+		result = True
 		for row in range(9):
 			for col in range(9):
 				if squares[row][col].editable:
 					check = self.CheckValue(squares, squares[row][col].value, row, col)
 					if check[0] or check[1] or check[2]:
-						self.WrongAnswer(squares, row, col)
-						return False
+						squares[row][col].WrongAnswer()
+						result = False
 					else:
-						self.PossibleAnswer(squares, row, col)
-						return True
+						squares[row][col].PossibleAnswer()
+		return result
