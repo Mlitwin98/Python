@@ -1,36 +1,35 @@
 from figures import *
+from solver import Solve
 
 p.init()
 p.display.set_caption("SUDOKU")
-noMistakes = False
+
 canPlay = True
 running = True
-
-
-def CheckForMistakes():
-	global noMistakes
-	if val.CheckWholeBoard(squares):
-		noMistakes = True
+solve = False
 
 
 def DisplayWin():
 	global canPlay
-	if noMistakes and not val.CheckIfEmptySpaces(squares):
-		p.draw.rect(screen, lightgray, p.Rect(100, 200, 700, 500), 0)
-		fontWin = p.font.SysFont('Arial', 150)
-		text = fontWin.render("You won", True, black)
-		text_rect = text.get_rect(center=(450, 450))
-		screen.blit(text, text_rect)
-		canPlay = False
+	if not val.CheckIfEmptySpaces(squares):
+		if val.CheckWholeBoard(squares):
+			p.draw.rect(screen, lightgray, p.Rect(100, 200, 700, 500), 0)
+			fontWin = p.font.SysFont('Arial', 150)
+			text = fontWin.render("You won", True, black)
+			text_rect = text.get_rect(center=(450, 450))
+			screen.blit(text, text_rect)
+			canPlay = False
 
 
 while running:
 	p.display.update()
 
-	CheckForMistakes()
 	DrawSquares()
 	DrawLines()
 	DisplayWin()
+
+	if solve:
+		Solve(squares)
 
 	for event in p.event.get():
 		if event.type == p.QUIT:
@@ -64,3 +63,5 @@ while running:
 					ChangeSquareText(9)
 				elif event.key == p.K_BACKSPACE:
 					EraseSquareText()
+				elif event.key == p.K_RETURN:
+					solve = True

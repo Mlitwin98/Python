@@ -74,12 +74,9 @@ class validator:
 	def CheckWholeBoard(self, squares):
 		for row in range(9):
 			for col in range(9):
-				if squares[row][col].editable and not squares[row][col].focused:
-					mistake = False
+				if squares[row][col].editable:
 					check = self.CheckValue(squares, squares[row][col].value, row, col)
 					if check[0] or check[1] or check[2]:
-						mistake = True
-					if mistake:
 						self.WrongAnswer(squares, row, col)
 						return False
 					else:

@@ -25,11 +25,15 @@ class square:
 		self.editable = editable
 		self.focused = False
 		self.value = text
+		self.background = white
 
 	def Draw(self):
+		p.draw.rect(screen, self.background, self.rect, 0)
 		p.draw.rect(screen, black, self.rect, 1)
 		text_rect = self.text.get_rect(center=(self.x+50, self.y+50))
 		screen.blit(self.text, text_rect)
+		if self.focused:
+			p.draw.rect(screen, green, self.rect, 5)
 
 	def UpdateText(self, text):
 		if self.editable:
@@ -38,9 +42,7 @@ class square:
 			else:
 				new_val = str(text)
 			self.value = text
-			p.draw.rect(screen, white, self.rect, 0)
 			self.text = font.render(new_val, True, lightblue)
-			p.draw.rect(screen, green, self.rect, 5)
 
 	def CheckIfMouseOver(self):
 		# noinspection PyArgumentList
@@ -49,25 +51,16 @@ class square:
 	def Click(self):
 		for row in range(9):
 			for sq in squares[row]:
-				p.draw.rect(screen, white, sq.rect, 5)
 				sq.focused = False
-		p.draw.rect(screen, green, self.rect, 5)
 		self.focused = True
 
 	def Erase(self):
 		if self.editable:
 			self.text = font.render('', True, white)
 			self.value = 0
-			p.draw.rect(screen, white, self.rect, 0)
-			p.draw.rect(screen, green, self.rect, 5)
 
 	def ChangeBackground(self, color):
-		if self.editable and self.focused:
-			p.draw.rect(screen, color, self.rect, 0)
-			p.draw.rect(screen, green, self.rect, 5)
-		else:
-			p.draw.rect(screen, color, self.rect, 0)
-			p.draw.rect(screen, white, self.rect, 5)
+		self.background = color
 
 
 class line:
@@ -129,6 +122,7 @@ def ChangeSquareText(text):
 					val.WrongAnswer(squares, row, col)
 				else:
 					val.PossibleAnswer(squares, row, col)
+				val.CheckWholeBoard(squares)
 
 
 def EraseSquareText():
@@ -136,4 +130,5 @@ def EraseSquareText():
 		for sq in squares[row]:
 			if sq.focused:
 				sq.Erase()
+				val.CheckWholeBoard(squares)
 # ---------------
