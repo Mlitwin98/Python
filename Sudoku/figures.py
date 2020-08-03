@@ -4,7 +4,7 @@ from examples import *
 from validator import validator
 
 WIDTH = 900
-HEIGHT = 1000
+HEIGHT = 900
 screen = p.display.set_mode((WIDTH, HEIGHT))
 screen.fill(white)
 p.font.init()
